@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tanguy NOTO — Consultant &amp; Formateur RH indépendant | TN FORMATION</title>
+<meta name="description" content="Consultant et formateur RH indépendant en Île-de-France et à distance : structuration des pratiques RH, administration du personnel, relations sociales, recrutement, développement des compétences, modules transverses. Interventions en entreprises, écoles, CFA et parcours de reconversion. Disponibilités en temps réel.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --nuit:#1d2733; --nuit2:#2b3a4c; --or:#d8bd78; --or-f:#a8873a; --or-pale:#f7efd9; --acier:#5d6f86;
+          --fond:#f6f5f1; --carte:#fff; --ligne:#e4e1d8; --texte:#1d2733; --doux:#5f6b78; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Montserrat,'Segoe UI',system-ui,sans-serif; color:var(--texte); background:var(--fond); line-height:1.55; }
+  a { color:var(--or-f); }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 24px; }
+
+  header { background:linear-gradient(115deg,#141b24,var(--nuit) 50%,var(--nuit2)); color:#fff; }
+  .top { display:flex; align-items:center; gap:16px; padding:22px 0; }
+  .top svg { width:46px; height:40px; flex:none; }
+  .brand { font-size:14px; letter-spacing:.35em; color:#c7d0da; }
+  .top nav { margin-left:auto; display:flex; gap:22px; font-size:14px; }
+  .top nav a { color:#e6ebf0; text-decoration:none; }
+  .hero { padding:36px 0 54px; }
+  .kicker { color:var(--or); letter-spacing:.32em; font-size:13px; font-weight:600; }
+  h1 { font-size:clamp(30px,4.4vw,46px); line-height:1.12; margin:12px 0 14px; font-weight:700; }
+  h1 span { color:var(--or); font-weight:300; }
+  .hero p { max-width:680px; color:#c9d2dc; margin:0 0 22px; font-size:16.5px; }
+  .btn { display:inline-block; background:var(--or); color:var(--nuit); font-weight:700; text-decoration:none; padding:12px 22px; border-radius:40px; border:0; font:inherit; font-weight:700; cursor:pointer; }
+  .btn.ghost { background:transparent; color:var(--or); border:1.5px solid var(--or); margin-left:8px; }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+
+  section { padding:56px 0 8px; }
+  h2 { font-size:28px; margin:0 0 6px; }
+  .sub { color:var(--doux); margin:0 0 24px; }
+
+  /* --- Calendrier --- */
+  .cal-bar { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+  .nav-btn { width:38px; height:38px; border-radius:50%; border:1px solid var(--ligne); background:var(--carte); cursor:pointer; font-size:18px; color:var(--nuit); }
+  .nav-btn:disabled { opacity:.35; cursor:default; }
+  .legend { display:flex; gap:16px; margin-left:auto; font-size:13px; color:var(--doux); flex-wrap:wrap; }
+  .legend i { display:inline-block; width:14px; height:14px; border-radius:4px; vertical-align:-2px; margin-right:6px; }
+  .months { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  @media (max-width:900px){ .months { grid-template-columns:1fr 1fr; } .months .m:nth-child(3){ display:none; } }
+  @media (max-width:600px){ .months { grid-template-columns:1fr; } .months .m:nth-child(2){ display:none; } .top nav{ display:none; } }
+  .m { background:var(--carte); border:1px solid var(--ligne); border-radius:14px; padding:16px 14px 14px; }
+  .m h3 { margin:0 0 10px; font-size:15px; text-transform:capitalize; text-align:center; }
+  .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+  .dow { font-size:11px; color:var(--doux); text-align:center; padding-bottom:4px; font-weight:600; }
+  .d { aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:13.5px; position:relative; }
+  .d.vide { visibility:hidden; }
+  .d.off { color:#b9bec5; }
+  .d.passe { color:#c9cdd2; }
+  .d.pris { background:repeating-linear-gradient(135deg,#eceef1 0 5px,#e2e5ea 5px 10px); color:#8a939e; }
+  .d.dispo { background:var(--or-pale); color:var(--nuit); font-weight:700; cursor:pointer; border:1.5px solid #ead9ad; }
+  .d.dispo:hover { border-color:var(--or); }
+  .d.sel { background:var(--nuit); color:#fff; border-color:var(--nuit); }
+  .d.today::after { content:''; position:absolute; bottom:4px; width:4px; height:4px; border-radius:50%; background:var(--or-f); }
+  .d:focus-visible { outline:2px solid var(--or-f); outline-offset:1px; }
+
+  .panel { display:grid; grid-template-columns:1.3fr 1fr; gap:18px; margin-top:18px; }
+  @media (max-width:800px){ .panel { grid-template-columns:1fr; } }
+  .card { background:var(--carte); border:1px solid var(--ligne); border-radius:14px; padding:20px; }
+  .card h4 { margin:0 0 10px; font-size:15px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { border:1px solid #ead9ad; background:var(--or-pale); border-radius:30px; padding:6px 12px; font-size:13px; cursor:pointer; font-family:inherit; color:var(--nuit); }
+  .chip.sel { background:var(--nuit); color:#fff; border-color:var(--nuit); }
+  .muted { color:var(--doux); font-size:13px; }
+  .selinfo { margin:12px 0; font-size:14px; }
+  code.url { display:block; background:#f1efe8; border-radius:8px; padding:8px 10px; font-size:12.5px; word-break:break-all; margin:8px 0; }
+  details { margin-top:8px; font-size:13.5px; } summary { cursor:pointer; font-weight:600; }
+
+  /* --- Offre --- */
+  .cols { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  @media (max-width:800px){ .cols { grid-template-columns:1fr; } }
+  .cols ul { margin:0; padding-left:18px; } .cols li { margin:4px 0; font-size:14.5px; }
+  .cols.two { grid-template-columns:1fr 1fr; }
+  @media (max-width:800px){ .cols.two { grid-template-columns:1fr; } }
+  .tag { font-size:11.5px; letter-spacing:.22em; color:var(--or-f); font-weight:700; margin-bottom:6px; }
+  .card h4 + ul { margin-top:0; }
+  .intro { margin-bottom:18px; font-size:15.5px; border-left:4px solid var(--or); }
+  ul.plain { padding-left:18px; margin:0; } ul.plain li { margin:6px 0; font-size:14.5px; }
+  .mini { margin:12px 0 4px; font-size:12.5px; font-weight:700; color:var(--doux); text-transform:uppercase; letter-spacing:.08em; }
+  .tools { display:grid; grid-template-columns:repeat(2,1fr); gap:14px 28px; margin-top:6px; }
+  @media (max-width:700px){ .tools { grid-template-columns:1fr; } }
+  .tools span { display:block; font-weight:700; font-size:13.5px; margin-bottom:6px; }
+  .tools p { margin:0; display:flex; flex-wrap:wrap; gap:6px; }
+  .tools i { font-style:normal; font-size:13px; background:#f1efe8; border:1px solid var(--ligne); border-radius:20px; padding:3px 10px; }
+
+  footer { margin-top:64px; background:var(--nuit); color:#aeb8c4; font-size:13.5px; padding:30px 0; }
+  footer a { color:var(--or); }
+  .foot { display:flex; gap:24px; flex-wrap:wrap; justify-content:space-between; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="top">
+      <svg viewBox="0 0 520 380" aria-hidden="true"><rect x="0" y="0" width="313" height="62" fill="#5d6f86"/><polygon points="125,88 203,98 203,368 125,368" fill="#5d6f86"/><polygon points="245,118 425,280 425,380 245,210" fill="#5d6f86"/><polygon points="433,58 500,0 500,312 433,372" fill="#d8bd78"/></svg>
+      <div class="brand">TN FORMATION</div>
+      <nav><a href="#dispos">Disponibilités</a><a href="#offre">Conseil &amp; formation</a><a href="#parcours">Parcours</a><a href="#contact">Contact</a></nav>
+    </div>
+    <div class="hero">
+      <div class="kicker">CONSULTANT &amp; FORMATEUR RH INDÉPENDANT · TANGUY NOTO</div>
+      <h1>Conseiller et former en RH <span>avec l'expérience du terrain</span></h1>
+      <p>Responsable RH multisites et membre de comités de direction au sein de grands groupes internationaux, j'ai aussi été directeur de magasin, chargé de recrutement et responsable de formation : je connais les RH sous tous les angles. J'interviens en <b>entreprises</b>, en <b>écoles</b>, en <b>CFA</b> et auprès des publics en <b>reconversion</b>, en conseil comme en formation.</p>
+      <a class="btn" href="#dispos">Voir mes disponibilités</a><a class="btn ghost" href="#offre">Découvrir mon offre</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="dispos">
+    <h2>Mes disponibilités</h2>
+    <p class="sub">Mises à jour dès que j'accepte une intervention. Cliquez sur un ou plusieurs jours libres pour me les demander.</p>
+
+    <div class="cal-bar">
+      <button class="nav-btn" id="prev" aria-label="Mois précédents">‹</button>
+      <button class="nav-btn" id="next" aria-label="Mois suivants">›</button>
+      <span class="muted" id="maj"></span>
+      <div class="legend">
+        <span><i style="background:var(--or-pale);border:1.5px solid #ead9ad"></i>Disponible</span>
+        <span><i style="background:repeating-linear-gradient(135deg,#eceef1 0 3px,#dfe2e7 3px 6px)"></i>Déjà pris</span>
+        <span><i style="background:#fff;border:1px solid var(--ligne)"></i>Week-end / férié</span>
+      </div>
+    </div>
+    <div class="months" id="months"></div>
+
+    <div class="panel">
+      <div class="card">
+        <h4>Votre demande</h4>
+        <div class="selinfo" id="selinfo">Cliquez sur les jours libres du calendrier pour les sélectionner.</div>
+        <button class="btn" id="ask" disabled>Demander ces dates</button>
+        <button class="btn ghost" id="clear" style="display:none">Effacer</button>
+      </div>
+      <div class="card" id="sub-card">
+        <h4>Suivre mes disponibilités dans votre agenda</h4>
+        <p class="muted" style="margin:0">Abonnez-vous une fois : mes jours libres apparaissent dans votre agenda et se mettent à jour automatiquement.</p>
+        <code class="url" id="ics-url"></code>
+        <a class="btn" id="webcal" href="#">S'abonner (Apple / Outlook)</a>
+        <details><summary>Google Agenda</summary>Autres agendas (+) › À partir de l'URL › collez l'adresse ci-dessus.</details>
+        <details><summary>Outlook web / Microsoft 365</summary>Ajouter un calendrier › S'abonner à partir du web › collez l'adresse ci-dessus.</details>
+      </div>
+    </div>
+  </section>
+
+  <section id="offre">
+    <h2>Conseil &amp; formation</h2>
+    <p class="sub">Deux façons de travailler ensemble : je vous accompagne sur vos sujets RH, et je forme vos équipes ou vos apprenants. Présentiel en Île-de-France, distanciel partout en France.</p>
+    <div class="cols two">
+      <div class="card"><div class="tag">CONSEIL RH</div><h4>Pour les entreprises</h4><ul>
+        <li><b>Structurer vos pratiques RH</b> : process, outils, fiches de poste, feuille de route RH</li>
+        <li><b>Administration du personnel</b> : diagnostic de conformité légale et conventionnelle, fiabilisation des éléments variables de paie</li>
+        <li><b>Relations sociales</b> : préparation des CSE, CSSCT et NAO, accompagnement des négociations</li>
+        <li><b>Situations sensibles</b> : dossiers disciplinaires, salariés protégés, contentieux, réorganisations</li>
+        <li><b>Recrutement</b> : définition des besoins, sélection, intégration</li>
+        <li><b>Compétences</b> : revues de développement, GEPP, plan de formation, entretiens professionnels</li>
+        <li><b>Santé et sécurité</b> : évaluation des risques professionnels, DUERP, risques psychosociaux</li>
+        <li><b>RRH à temps partagé</b> pour les structures sans service RH</li></ul></div>
+      <div class="card"><div class="tag">FORMATION</div><h4>Entreprises, écoles, CFA et reconversion</h4>
+        <p class="mini">Modules RH</p><ul>
+        <li>Administration du personnel et éléments variables de paie</li>
+        <li>Process RH et digital RH</li>
+        <li>Recrutement : méthodes, conduite d'entretien, recrutement sur les réseaux sociaux</li>
+        <li>Bilan social et tableaux de bord RH</li>
+        <li>IRP et dialogue social : CSE, CSSCT, NAO, négociation d'accords</li>
+        <li>GEPP, développement des compétences, ingénierie de formation</li>
+        <li>Prévention des conflits et des risques professionnels</li>
+        <li>Veille sociale</li>
+        <li>RSE et QVCT</li>
+        <li><b>Managers</b> : les situations RH à savoir gérer au quotidien</li></ul>
+        <p class="mini">Modules transverses</p><ul>
+        <li>EME : préparation, suivi et suite de parcours</li>
+        <li>Posture professionnelle</li>
+        <li>CV, lettre de motivation et entretiens d'embauche</li>
+        <li>Recherche d'entreprise : stage, alternance, emploi</li>
+        <li>Préparation aux oraux et aux jurys</li></ul>
+        <p class="muted" style="margin:12px 0 0">Titres RNCP, BTS, bachelors et mastères en alternance, parcours de reconversion, intra-entreprise, oraux et jurys.</p></div>
+    </div>
+  </section>
+
+  <section id="parcours">
+    <h2>Parcours</h2>
+    <p class="sub">Un profil RH forgé sur le terrain, au sein de grands groupes internationaux.</p>
+    <div class="card intro">
+      <b>Responsable RH multisites</b> et membre de comités de direction, j'ai piloté les RH de plusieurs sites : relations sociales, situations sensibles, recrutement, développement des compétences et transformation. Auparavant directeur de magasin, chargé de recrutement et responsable de formation, je connais les RH <b>des deux côtés</b> : celui du manager qui les applique au quotidien, et celui du RRH qui les pilote. C'est cette double lecture que j'apporte à mes clients et à mes apprenants.
+    </div>
+    <div class="cols two">
+      <div class="card"><div class="tag">RESPONSABLE RH MULTISITES</div><h4>METRO · Île-de-France</h4><ul>
+        <li>Business partner du comité de direction dans la transformation de l'entreprise</li>
+        <li>Accompagnement des managers opérationnels, cadres et agents de maîtrise dans la gestion de leurs équipes</li>
+        <li>Dialogue social avec le CSE, la CSSCT et les organisations syndicales</li>
+        <li>Procédures disciplinaires et ruptures : licenciement, inaptitude, rupture conventionnelle</li>
+        <li>Recrutement et intégration des équipes, plan de formation et suivi des compétences</li>
+        <li>Budget de masse salariale et pilotage des indicateurs RH</li></ul></div>
+      <div class="card"><div class="tag">RESPONSABLE RH MULTISITES</div><h4>FNAC · Île-de-France</h4><ul>
+        <li>Membre du comité de direction, portefeuille de plusieurs magasins</li>
+        <li>Animation de la filière RH : feuille de route RH, relations sociales, engagement</li>
+        <li>Préparation et coanimation des instances : CSE, CSSCT, NAO, représentants de proximité</li>
+        <li>Dossiers disciplinaires, y compris pour des salariés protégés, et contentieux</li>
+        <li>Conduite d'une fermeture de site : process social, risques psychosociaux, repositionnement des salariés</li>
+        <li>Revues de développement, mobilités, plans salaires, déploiement du DUERP</li></ul></div>
+      <div class="card"><div class="tag">RESPONSABLE DE FORMATION</div><h4>IFOCOP</h4><ul>
+        <li>Pilotage de parcours certifiants (titres RNCP) en formation continue</li>
+        <li>Suivi pédagogique individualisé des apprenants et des stagiaires</li>
+        <li>Coordination de l'équipe de formateurs et planification des interventions</li>
+        <li>Organisation des évaluations, des examens et des jurys de certification</li>
+        <li>Accompagnement vers l'entreprise : recherche de stage, lien avec les tuteurs</li>
+        <li>Prévention des ruptures de parcours et suivi de la réussite des apprenants</li>
+        <li>En amont, chargé de recrutement : sourcing, entretiens d'admission, sélection des candidats</li></ul></div>
+      <div class="card"><div class="tag">DIRECTEUR DE MAGASIN</div><h4>Multi-enseignes · Undiz, Blue Box, Calzedonia, MCS</h4><ul>
+        <li>Direction de magasins et pilotage de la performance commerciale</li>
+        <li>Recrutement, intégration et formation des équipes</li>
+        <li>Entretiens annuels et professionnels, détection des talents et promotions internes</li>
+        <li>Plannings, temps de travail et suivi des absences</li>
+        <li>Collecte et contrôle des éléments variables de paie</li>
+        <li>Recadrages et premiers niveaux de procédure disciplinaire</li>
+        <li>Application du droit du travail et de la convention collective au quotidien</li>
+        <li>Santé et sécurité au travail des équipes</li></ul></div>
+    </div>
+    <div class="card" style="margin-top:18px"><div class="tag">DIPLÔMES</div><ul class="plain">
+      <li><b>Responsable des Ressources Humaines</b> (Bac +4), IFOCOP, mention Très Bien</li>
+      <li><b>BTS Management des Unités Commerciales</b> (Bac +2), ESG</li>
+      <li><b>Baccalauréat Économique et Social</b></li></ul></div>
+    <div class="card" style="margin-top:18px"><div class="tag">OUTILS MAÎTRISÉS</div>
+      <div class="tools">
+        <div><span>SIRH &amp; paie</span><p><i>SAP HR</i><i>Oracle</i><i>SmartRH</i><i>TeamsRH</i><i>Citrix</i></p></div>
+        <div><span>Dialogue social</span><p><i>BDESE Altays</i></p></div>
+        <div><span>Signature &amp; dématérialisation</span><p><i>LexPersona</i><i>DématRH</i><i>MyPrimoBox</i><i>Gino</i></p></div>
+        <div><span>Talents &amp; formation</span><p><i>Foederis</i><i>Talentsoft</i></p></div>
+        <div><span>Temps &amp; planning</span><p><i>Horoquartz</i><i>Sisqual</i></p></div>
+        <div><span>Santé-sécurité &amp; engagement</span><p><i>Acciline</i><i>Supermood</i></p></div>
+        <div><span>Bureautique &amp; données</span><p><i>Office 365</i><i>Power BI</i><i>SharePoint</i></p></div>
+        <div><span>Gestion commerciale</span><p><i>ERP</i><i>noCRM</i></p></div>
+      </div></div>
+  </section>  <section id="contact">
+    <h2>Contact</h2>
+    <p class="sub">Un projet RH à structurer, une formation, un besoin de jury ? Réponse sous 24 h ouvrées.</p>
+    <div class="card" style="display:flex;gap:28px;flex-wrap:wrap;align-items:center">
+      <div><b>Tanguy NOTO</b><br><span class="muted">Consultant &amp; Formateur RH indépendant · TN FORMATION</span></div>
+      <div>✉️ <a href="mailto:tanguy@tnformation.net">tanguy@tnformation.net</a><br>📞 <a href="tel:+33651811448">06 51 81 14 48</a></div>
+      <div><a href="https://www.linkedin.com/in/tanguynoto/">Profil LinkedIn</a></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>© TN FORMATION — Tanguy NOTO, entrepreneur individuel · SIRET : <span>[à compléter]</span></div>
+    <div>Hébergement : GitHub Pages (GitHub, Inc., San Francisco, USA) · Ce site n'utilise ni cookie ni outil de mesure.</div>
+  </div>
+</footer>
+
+<script src="disponibilites.js"></script>
+<script>
+(function(){
+  const CONTACT = 'tanguy@tnformation.net';
+  const D = window.DISPO || { jours:{}, feries:{}, debut:new Date().toISOString().slice(0,10), fin:new Date().toISOString().slice(0,10) };
+  const pad = n => String(n).padStart(2,'0');
+  const key = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  const parse = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+  const fmtLong = s => parse(s).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const fmtShort = s => parse(s).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+  const debut = parse(D.debut), fin = parse(D.fin), todayKey = key(new Date());
+  const sel = new Set();
+  let offset = 0; // décalage en mois depuis le mois de début
+  const nbMonths = () => Math.max(1, (fin.getFullYear()-debut.getFullYear())*12 + fin.getMonth()-debut.getMonth() + 1);
+
+  if (D.maj) document.getElementById('maj').textContent = 'Dernière modification le ' + new Date(D.maj).toLocaleString('fr-FR',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+
+  function state(k, d){
+    const wd = d.getDay();
+    if (wd===0 || wd===6) return 'off';
+    if (D.feries && D.feries[k]) return 'off';
+    if (k < D.debut) return 'passe';
+    if (k > D.fin) return 'off';
+    return D.jours[k]==='dispo' ? 'dispo' : (D.jours[k] ? 'pris' : 'off');
+  }
+
+  function render(){
+    const box = document.getElementById('months'); box.innerHTML='';
+    for (let i=0;i<3;i++){
+      const first = new Date(debut.getFullYear(), debut.getMonth()+offset+i, 1);
+      const m = document.createElement('div'); m.className='m';
+      m.innerHTML = '<h3>'+first.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})+'</h3>';
+      const g = document.createElement('div'); g.className='grid';
+      ['L','M','M','J','V','S','D'].forEach(x=>{ const e=document.createElement('div'); e.className='dow'; e.textContent=x; g.appendChild(e); });
+      const lead = (first.getDay()+6)%7;
+      for (let j=0;j<lead;j++){ const e=document.createElement('div'); e.className='d vide'; g.appendChild(e); }
+      const days = new Date(first.getFullYear(), first.getMonth()+1, 0).getDate();
+      for (let dd=1; dd<=days; dd++){
+        const d = new Date(first.getFullYear(), first.getMonth(), dd), k = key(d), st = state(k,d);
+        const e = document.createElement('div');
+        e.className = 'd '+st + (sel.has(k)?' sel':'') + (k===todayKey?' today':'');
+        e.textContent = dd;
+        if (st==='dispo'){ e.tabIndex=0; e.setAttribute('role','button'); e.title='Disponible — '+fmtLong(k);
+          e.onclick = ()=>toggle(k); e.onkeydown = ev=>{ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); toggle(k);} }; }
+        else if (st==='pris') e.title='Déjà pris';
+        else if (D.feries && D.feries[k]) e.title=D.feries[k];
+        g.appendChild(e);
+      }
+      m.appendChild(g); box.appendChild(m);
+    }
+    document.getElementById('prev').disabled = offset<=0;
+    document.getElementById('next').disabled = offset+3 >= nbMonths();
+    renderSel();
+  }
+
+  function renderSel(){
+    const list=[...sel].sort(), info=document.getElementById('selinfo');
+    info.textContent = list.length ? (list.length+' date'+(list.length>1?'s':'')+' : '+list.map(fmtShort).join(', ')) : 'Cliquez sur les jours libres du calendrier pour les sélectionner.';
+    document.getElementById('ask').disabled = !list.length;
+    document.getElementById('clear').style.display = list.length ? '' : 'none';
+  }
+
+  function toggle(k){ sel.has(k)?sel.delete(k):sel.add(k); render(); }
+
+  document.getElementById('prev').onclick=()=>{ offset=Math.max(0,offset-1); render(); };
+  document.getElementById('next').onclick=()=>{ offset++; render(); };
+  document.getElementById('clear').onclick=()=>{ sel.clear(); render(); };
+  document.getElementById('ask').onclick=()=>{
+    const list=[...sel].sort();
+    const subject='Demande d\'intervention — '+list.map(fmtShort).join(', ');
+    const body='Bonjour Tanguy,\n\nJe souhaiterais vous proposer une intervention (formation ou mission de conseil) le(s) :\n'+list.map(k=>'• '+fmtLong(k)).join('\n')+
+      '\n\nOrganisme / entreprise :\nType : formation / conseil\nThème / module / besoin :\nPublic et nombre de participants :\nLieu ou distanciel :\nHoraires :\n\nCordialement,';
+    location.href='mailto:'+CONTACT+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  };
+
+  // Lien d'abonnement : n'a de sens qu'une fois le site en ligne
+  if (location.protocol.startsWith('http')){
+    const base = location.href.replace(/[#?].*$/,'').replace(/[^/]*$/,'');
+    const ics = base+'disponibilites.ics';
+    document.getElementById('ics-url').textContent = ics;
+    document.getElementById('webcal').href = ics.replace(/^https?:/,'webcal:');
+  } else {
+    document.getElementById('sub-card').style.display='none';
+    document.querySelector('.panel').style.gridTemplateColumns='1fr';
+  }
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+# Met à jour les disponibilités depuis « Calendrier interventions.xlsx » (OneDrive), sans que ton PC soit allumé.
+# Le lien de partage OneDrive est stocké dans le secret ONEDRIVE_XLSX_URL (jamais visible dans le dépôt ni dans les journaux).
+name: Mise à jour des disponibilités
+
+on:
+  schedule:
+    - cron: '*/30 5-22 * * *'   # toutes les 30 min de 6 h à minuit environ (heure de Paris)
+  workflow_dispatch:              # bouton « Run workflow » pour forcer une mise à jour
+
+permissions:
+  contents: write
+
+concurrency:
+  group: disponibilites
+  cancel-in-progress: false
+
+jobs:
+  maj:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Générer les disponibilités
+        shell: pwsh
+        env:
+          TNF_SOURCE: ${{ secrets.ONEDRIVE_XLSX_URL }}
+        run: |
+          if (-not $env:TNF_SOURCE) { Write-Host "Secret ONEDRIVE_XLSX_URL pas encore configuré : rien à faire."; exit 0 }
+          ./outils/Publier-Disponibilites.ps1
+
+      - name: Publier si quelque chose a changé
+        run: |
+          git config user.name  "maj-disponibilites"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add disponibilites.js disponibilites.ics
+          if git diff --cached --quiet; then
+            echo "Aucun changement."
+          else
+            git commit -m "Disponibilités mises à jour (automatique)"
+            git push
+          fi
