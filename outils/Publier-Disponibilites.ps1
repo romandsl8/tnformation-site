@@ -254,8 +254,15 @@ if ($Publier) {
     git diff --cached --quiet
     if ($LASTEXITCODE -ne 0) {
       git commit -q -m ("Disponibilités mises à jour le " + $maj.ToString('dd/MM/yyyy HH:mm'))
-      git push -q
-      Write-Host 'Disponibilités publiées en ligne.'
-    } else { Write-Host 'Aucun changement : rien à publier.' }
+      git pull -q --rebase 2>&1 | Out-Null
+      git push -q 2>&1 | Out-Null
+      if ($LASTEXITCODE -eq 0) { Write-Host 'Disponibilités publiées en ligne.' }
+      else { Write-Host 'Échec de la mise en ligne (pas de connexion internet ?) : nouvel essai au prochain passage.' }
+    } else {
+      # rien de neuf, mais on renvoie un éventuel envoi resté en attente (PC hors ligne la fois précédente)
+      $attente = git rev-list --count '@{u}..HEAD' 2>$null
+      if ($attente -and [int]$attente -gt 0) { git push -q 2>&1 | Out-Null; Write-Host 'Envoi en attente publié.' }
+      else { Write-Host 'Aucun changement : rien à publier.' }
+    }
   } finally { Pop-Location }
 }
