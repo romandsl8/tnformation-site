@@ -38,17 +38,41 @@ $maintenant = if ($tz) { [TimeZoneInfo]::ConvertTime([DateTimeOffset]::UtcNow, $
 # --- 1. Lecture du classeur (copie temporaire : fonctionne même si Excel l'a ouvert) ---
 $tmp = Join-Path ([IO.Path]::GetTempPath()) ("tnf-" + [guid]::NewGuid().ToString('N') + '.xlsx')
 if ($Source -match '^https?://') {
-  # Lien de partage OneDrive : on essaie l'API de partage, puis le lien avec ?download=1
-  $b64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($Source)).TrimEnd('=').Replace('/', '_').Replace('+', '-')
-  $essais = @("https://api.onedrive.com/v1.0/shares/u!$b64/root/content",
-              ($Source + $(if ($Source.Contains('?')) { '&' } else { '?' }) + 'download=1'))
-  $ok = $false
+  # Lien de partage OneDrive. Plusieurs méthodes, car Microsoft a changé le format des liens.
+  # Le journal n'affiche JAMAIS d'adresse : seulement le numéro de méthode, le code HTTP et le type reçu.
+  $enc = { param($s) 'u!' + [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($s)).TrimEnd('=').Replace('/', '_').Replace('+', '-') }
+  $ajout = { param($u, $q) $u + $(if ($u.Contains('?')) { '&' } else { '?' }) + $q }
+  $essais = [System.Collections.Generic.List[string]]::new()
+  $essais.Add("https://api.onedrive.com/v1.0/shares/$(& $enc $Source)/root/content")
+  $essais.Add("https://api.onedrive.com/v1.0/shares/$(& $enc $Source)/driveItem/content")
+  $essais.Add((& $ajout ($Source -replace '\?.*$', '') 'download=1'))
+  $essais.Add((& $ajout $Source 'download=1'))
+  # Lien court 1drv.ms : on récupère l'adresse de destination pour en déduire un lien de téléchargement
+  try {
+    $req = [Net.HttpWebRequest]::Create($Source); $req.AllowAutoRedirect = $false; $req.Method = 'GET'
+    $rep = $req.GetResponse(); $loc = $rep.Headers['Location']; $rep.Close()
+  } catch { $loc = $null; if ($_.Exception.InnerException.Response) { $loc = $_.Exception.InnerException.Response.Headers['Location'] } }
+  if ($loc) {
+    if ($loc -match '[?&]redeem=([^&]+)') { $essais.Add("https://api.onedrive.com/v1.0/shares/u!$($Matches[1])/root/content") }
+    if ($loc -match '[?&]resid=([^&]+)' ) { $resid = $Matches[1]
+      $auth = if ($loc -match '[?&]authkey=([^&]+)') { "&authkey=$($Matches[1])" } else { '' }
+      $essais.Add("https://onedrive.live.com/download?resid=$resid$auth") }
+    $essais.Add((& $ajout $loc 'download=1'))
+  }
+  $ok = $false; $n = 0
   foreach ($u in $essais) {
+    $n++
+    if ($env:GITHUB_ACTIONS) { Write-Host "::add-mask::$u" }   # masque toute adresse dérivée du lien
     try {
-      Invoke-WebRequest -Uri $u -OutFile $tmp -UseBasicParsing -MaximumRedirection 10
+      $r = Invoke-WebRequest -Uri $u -OutFile $tmp -UseBasicParsing -MaximumRedirection 10 -PassThru
       $sig = [IO.File]::ReadAllBytes($tmp)[0..1]
-      if ($sig[0] -eq 0x50 -and $sig[1] -eq 0x4B) { $ok = $true; break }   # « PK » = fichier xlsx
-    } catch {}
+      $estXlsx = ($sig[0] -eq 0x50 -and $sig[1] -eq 0x4B)    # « PK » = fichier xlsx
+      Write-Host ("Méthode {0} : HTTP {1}, type {2}, xlsx={3}" -f $n, [int]$r.StatusCode, ($r.Headers['Content-Type'] -join ''), $estXlsx)
+      if ($estXlsx) { $ok = $true; break }
+    } catch {
+      $code = try { [int]$_.Exception.Response.StatusCode } catch { 0 }
+      Write-Host ("Méthode {0} : échec (HTTP {1})" -f $n, $code)
+    }
   }
   if (-not $ok) { throw "Impossible de télécharger le classeur depuis le lien OneDrive (lien expiré ou non partagé ?)." }
 } else {
