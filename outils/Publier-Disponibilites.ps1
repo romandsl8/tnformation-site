@@ -249,12 +249,15 @@ Write-Host ("Période {0} -> {1} : {2} jours libres, {3} jours pris." -f $data.d
 # --- 7. Mise en ligne (GitHub Pages) ---
 if ($Publier) {
   Push-Location $site
+  # git écrit ses messages sur la sortie d'erreur : on ne doit pas les traiter comme des erreurs fatales
+  $ErrorActionPreference = 'Continue'
   try {
-    git add disponibilites.js disponibilites.ics | Out-Null
+    git add disponibilites.js disponibilites.ics 2>&1 | Out-Null
     git diff --cached --quiet
     if ($LASTEXITCODE -ne 0) {
-      git commit -q -m ("Disponibilités mises à jour le " + $maj.ToString('dd/MM/yyyy HH:mm'))
-      git pull -q --rebase 2>&1 | Out-Null
+      git commit -q -m ("Disponibilités mises à jour le " + $maj.ToString('dd/MM/yyyy HH:mm')) 2>&1 | Out-Null
+      # --autostash : fonctionne même si un autre fichier du site est en cours de modification
+      git pull -q --rebase --autostash 2>&1 | Out-Null
       git push -q 2>&1 | Out-Null
       if ($LASTEXITCODE -eq 0) { Write-Host 'Disponibilités publiées en ligne.' }
       else { Write-Host 'Échec de la mise en ligne (pas de connexion internet ?) : nouvel essai au prochain passage.' }
