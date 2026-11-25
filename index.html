@@ -58,17 +58,12 @@
   .d.today::after { content:''; position:absolute; bottom:4px; width:4px; height:4px; border-radius:50%; background:var(--or-f); }
   .d:focus-visible { outline:2px solid var(--or-f); outline-offset:1px; }
 
-  .panel { display:grid; grid-template-columns:1.3fr 1fr; gap:18px; margin-top:18px; }
-  @media (max-width:800px){ .panel { grid-template-columns:1fr; } }
+  .panel { margin-top:18px; }
   .card { background:var(--carte); border:1px solid var(--ligne); border-radius:14px; padding:20px; }
   .card h4 { margin:0 0 10px; font-size:15px; }
-  .chips { display:flex; flex-wrap:wrap; gap:8px; }
-  .chip { border:1px solid #ead9ad; background:var(--or-pale); border-radius:30px; padding:6px 12px; font-size:13px; cursor:pointer; font-family:inherit; color:var(--nuit); }
-  .chip.sel { background:var(--nuit); color:#fff; border-color:var(--nuit); }
   .muted { color:var(--doux); font-size:13px; }
   .selinfo { margin:12px 0; font-size:14px; }
-  code.url { display:block; background:#f1efe8; border-radius:8px; padding:8px 10px; font-size:12.5px; word-break:break-all; margin:8px 0; }
-  details { margin-top:8px; font-size:13.5px; } summary { cursor:pointer; font-weight:600; }
+  #message { width:100%; font:14px/1.5 Montserrat,'Segoe UI',sans-serif; color:var(--texte); border:1px solid var(--ligne); border-radius:10px; padding:12px 14px; background:#fbfaf7; resize:vertical; margin-bottom:12px; }
 
   /* --- Offre --- */
   .cols { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
@@ -133,14 +128,13 @@
         <div class="selinfo" id="selinfo">Cliquez sur les jours libres du calendrier pour les sélectionner.</div>
         <button class="btn" id="ask" disabled>Demander ces dates</button>
         <button class="btn ghost" id="clear" style="display:none">Effacer</button>
-      </div>
-      <div class="card" id="sub-card">
-        <h4>Suivre mes disponibilités dans votre agenda</h4>
-        <p class="muted" style="margin:0">Abonnez-vous une fois : mes jours libres apparaissent dans votre agenda et se mettent à jour automatiquement.</p>
-        <code class="url" id="ics-url"></code>
-        <a class="btn" id="webcal" href="#">S'abonner (Apple / Outlook)</a>
-        <details><summary>Google Agenda</summary>Autres agendas (+) › À partir de l'URL › collez l'adresse ci-dessus.</details>
-        <details><summary>Outlook web / Microsoft 365</summary>Ajouter un calendrier › S'abonner à partir du web › collez l'adresse ci-dessus.</details>
+        <div id="demande" hidden>
+          <p class="muted" style="margin:16px 0 6px">Votre message est prêt : complétez-le si besoin, copiez-le, puis envoyez-le à <b>tanguy@tnformation.net</b>.</p>
+          <textarea id="message" rows="12" aria-label="Message de demande d'intervention"></textarea>
+          <button class="btn" id="copier">Copier le message</button>
+          <button class="btn ghost" id="copier-mail">Copier l'adresse mail</button>
+          <span class="muted" id="copie-ok" role="status" style="margin-left:8px"></span>
+        </div>
       </div>
     </div>
   </section>
@@ -314,29 +308,26 @@
     document.getElementById('clear').style.display = list.length ? '' : 'none';
   }
 
-  function toggle(k){ sel.has(k)?sel.delete(k):sel.add(k); render(); }
+  function toggle(k){ sel.has(k)?sel.delete(k):sel.add(k); document.getElementById('demande').hidden=true; render(); }
 
   document.getElementById('prev').onclick=()=>{ offset=Math.max(0,offset-1); render(); };
   document.getElementById('next').onclick=()=>{ offset++; render(); };
-  document.getElementById('clear').onclick=()=>{ sel.clear(); render(); };
-  document.getElementById('ask').onclick=()=>{
+  document.getElementById('clear').onclick=()=>{ sel.clear(); document.getElementById('demande').hidden=true; render(); };
+  function message(){
     const list=[...sel].sort();
-    const subject='Demande d\'intervention — '+list.map(fmtShort).join(', ');
-    const body='Bonjour Tanguy,\n\nJe souhaiterais vous proposer une intervention (formation ou mission de conseil) le(s) :\n'+list.map(k=>'• '+fmtLong(k)).join('\n')+
+    return 'Objet : Demande d\'intervention — '+list.map(fmtShort).join(', ')+
+      '\n\nBonjour Tanguy,\n\nJe souhaiterais vous proposer une intervention (formation ou mission de conseil) le(s) :\n'+list.map(k=>'• '+fmtLong(k)).join('\n')+
       '\n\nOrganisme / entreprise :\nType : formation / conseil\nThème / module / besoin :\nPublic et nombre de participants :\nLieu ou distanciel :\nHoraires :\n\nCordialement,';
-    location.href='mailto:'+CONTACT+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-  };
-
-  // Lien d'abonnement : n'a de sens qu'une fois le site en ligne
-  if (location.protocol.startsWith('http')){
-    const base = location.href.replace(/[#?].*$/,'').replace(/[^/]*$/,'');
-    const ics = base+'disponibilites.ics';
-    document.getElementById('ics-url').textContent = ics;
-    document.getElementById('webcal').href = ics.replace(/^https?:/,'webcal:');
-  } else {
-    document.getElementById('sub-card').style.display='none';
-    document.querySelector('.panel').style.gridTemplateColumns='1fr';
   }
+  const zone=document.getElementById('demande'), champ=document.getElementById('message'), ok=document.getElementById('copie-ok');
+  document.getElementById('ask').onclick=()=>{ champ.value=message(); zone.hidden=false; ok.textContent=''; champ.focus(); champ.setSelectionRange(0,0); };
+  async function copier(texte, quoi){
+    try { await navigator.clipboard.writeText(texte); }
+    catch(e){ const t=document.createElement('textarea'); t.value=texte; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+    ok.textContent=quoi+' copié ✓';
+  }
+  document.getElementById('copier').onclick=()=>copier(champ.value,'Message');
+  document.getElementById('copier-mail').onclick=()=>copier(CONTACT,'Adresse');
   render();
 })();
 </script>
