@@ -164,10 +164,8 @@
         <button class="btn" id="ask" disabled>Demander ces dates</button>
         <button class="btn ghost" id="clear" style="display:none">Effacer</button>
         <div id="demande" hidden>
-          <p class="muted" style="margin:16px 0 6px">Votre message est prêt : complétez-le si besoin, copiez-le, puis envoyez-le à <b>tanguy@tnformation.net</b>.</p>
-          <textarea id="message" rows="12" aria-label="Message de demande d'intervention"></textarea>
-          <button class="btn" id="copier">Copier le message</button>
-          <button class="btn ghost" id="copier-dates">Copier les dates</button>
+          <p class="muted" style="margin:16px 0 10px">Copiez les dates et envoyez-les-moi par e-mail à <b>tanguy@tnformation.net</b>.</p>
+          <button class="btn" id="copier-dates">Copier les dates</button>
           <button class="btn ghost" id="copier-mail">Copier l'adresse mail</button>
           <span class="muted" id="copie-ok" role="status" style="margin-left:8px"></span>
         </div>
@@ -350,20 +348,13 @@
   document.getElementById('prev').onclick=()=>{ offset=Math.max(0,offset-1); render(); };
   document.getElementById('next').onclick=()=>{ offset++; render(); };
   document.getElementById('clear').onclick=()=>{ sel.clear(); document.getElementById('demande').hidden=true; render(); };
-  function message(){
-    const list=[...sel].sort();
-    return 'Objet : Demande d\'intervention — '+list.map(fmtShort).join(', ')+
-      '\n\nBonjour Tanguy,\n\nJe souhaiterais vous proposer une intervention (formation ou mission de conseil) le(s) :\n'+list.map(k=>'• '+fmtLong(k)).join('\n')+
-      '\n\nOrganisme / entreprise :\nType : formation / conseil\nThème / module / besoin :\nPublic et nombre de participants :\nLieu ou distanciel :\nHoraires :\n\nCordialement,';
-  }
-  const zone=document.getElementById('demande'), champ=document.getElementById('message'), ok=document.getElementById('copie-ok');
-  document.getElementById('ask').onclick=()=>{ champ.value=message(); zone.hidden=false; ok.textContent=''; champ.focus(); champ.setSelectionRange(0,0); };
+  const zone=document.getElementById('demande'), ok=document.getElementById('copie-ok');
+  document.getElementById('ask').onclick=()=>{ zone.hidden=false; ok.textContent=''; };
   async function copier(texte, quoi){
     try { await navigator.clipboard.writeText(texte); }
     catch(e){ const t=document.createElement('textarea'); t.value=texte; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
     ok.textContent=quoi+(quoi==='Dates'?' copiées ✓':' copié ✓');
   }
-  document.getElementById('copier').onclick=()=>copier(champ.value,'Message');
   document.getElementById('copier-dates').onclick=()=>copier([...sel].sort().map(k=>'• '+fmtLong(k)).join('\n'),'Dates');
   document.getElementById('copier-mail').onclick=()=>copier(CONTACT,'Adresse');
   render();
